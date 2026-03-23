@@ -17,11 +17,10 @@ app.get('/trigger-fetch', async (req, res) => {
       headers: {
         'x-apisports-key': process.env.SPORTS_API_KEY // Your free tier key
       },
-      params: { 
-          league: '39', // Example: Premier League
-          season: '2025', 
-         date: '2026-04-04' // Testing a future weekend!
-      } 
+     params: { 
+          // We removed the league and season entirely!
+          date: '2026-03-25' // Let's look for ANY game happening tomorrow
+      }
     });
 
     const gamesData = apiResponse.data.response;

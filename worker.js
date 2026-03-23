@@ -12,31 +12,25 @@ app.get('/', (req, res) => {
 // The Trigger Endpoint
 app.get('/trigger-fetch', async (req, res) => {
   try {
-    console.log("Fetching odds from Sports API...");
+    console.log("Fetching odds from The Odds API...");
     
-    // 1. Fetch data from the API Provider
-    const apiResponse = await axios.get('https://v3.football.api-sports.io/odds', {
-      headers: {
-        'x-apisports-key': process.env.SPORTS_API_KEY
-      },
-     params: { 
-          league: '39', 
-          season: '2024', // Downgraded to a free historical season
-          date: '2024-05-15' // A random Wednesday from last season with lots of games!
-      }
+    // 1. Fetch live/upcoming English Premier League odds
+    const apiResponse = await axios.get('https://api.the-odds-api.com/v4/sports/soccer_epl/odds', {
+      params: { 
+          apiKey: process.env.ODDS_API_KEY, // Your new key!
+          regions: 'uk', // Look at UK bookmakers
+          markets: 'h2h' // Head-to-head (Home/Draw/Away match winner)
+      } 
     });
 
-    const gamesData = apiResponse.data.response;
+    // The Odds API sends the games directly in an array
+    const gamesData = apiResponse.data;
 
-    // 🚨 X-RAY VISION: If the API sends nothing, print its secret data to the screen!
     if (!gamesData || gamesData.length === 0) {
-        return res.status(200).json({ 
-            message: "No games found. Here is exactly what the API said:", 
-            raw_api_data: apiResponse.data 
-        });
+        return res.status(200).json({ message: "No upcoming games found right now." });
     }
 
-    console.log("Data fetched! Sending to Main App...");
+    console.log(`Found ${gamesData.length} upcoming games! Sending to Main App...`);
 
     // 2. Forward the data to your Main App's Secret Door
     await axios.post(process.env.MAIN_APP_URL, {
@@ -47,15 +41,14 @@ app.get('/trigger-fetch', async (req, res) => {
         }
     });
 
-    console.log("Success! Data delivered.");
-    res.status(200).json({ message: "Task complete. Odds updated successfully." });
+    console.log("Success! Live Data delivered.");
+    res.status(200).json({ message: "Task complete. Live odds updated successfully." });
 
   } catch (error) {
     console.error("Error during fetch and send:", error.message);
-    res.status(500).json({ error: "Something went wrong." });
+    res.status(500).json({ error: "Something went wrong fetching from The Odds API." });
   }
 });
-
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Demo Worker 1 is listening on port ${PORT}`);

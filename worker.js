@@ -19,11 +19,11 @@ app.get('/trigger-fetch', async (req, res) => {
       headers: {
         'x-apisports-key': process.env.SPORTS_API_KEY
       },
-      params: { 
-          league: '39', // Premier League
-          season: '2025' // Current Season
-          // NOTICE: We completely deleted the date! 
-      } 
+     params: { 
+          league: '39', 
+          season: '2024', // Downgraded to a free historical season
+          date: '2024-05-15' // A random Wednesday from last season with lots of games!
+      }
     });
 
     const gamesData = apiResponse.data.response;

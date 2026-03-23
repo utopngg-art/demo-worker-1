@@ -3,10 +3,12 @@ const axios = require('axios');
 require('dotenv').config();
 
 const app = express();
+
 // A simple Front Door
 app.get('/', (req, res) => {
   res.send("🟢 Server is awake and running perfectly!");
 });
+
 // The Trigger Endpoint
 app.get('/trigger-fetch', async (req, res) => {
   try {
@@ -15,18 +17,23 @@ app.get('/trigger-fetch', async (req, res) => {
     // 1. Fetch data from the API Provider
     const apiResponse = await axios.get('https://v3.football.api-sports.io/odds', {
       headers: {
-        'x-apisports-key': process.env.SPORTS_API_KEY // Your free tier key
+        'x-apisports-key': process.env.SPORTS_API_KEY
       },
-     params: { 
-          // We removed the league and season entirely!
-          date: '2026-03-25' // Let's look for ANY game happening tomorrow
-      }
+      params: { 
+          league: '39', // Premier League
+          season: '2025' // Current Season
+          // NOTICE: We completely deleted the date! 
+      } 
     });
 
     const gamesData = apiResponse.data.response;
 
+    // 🚨 X-RAY VISION: If the API sends nothing, print its secret data to the screen!
     if (!gamesData || gamesData.length === 0) {
-        return res.status(200).json({ message: "No games found for today." });
+        return res.status(200).json({ 
+            message: "No games found. Here is exactly what the API said:", 
+            raw_api_data: apiResponse.data 
+        });
     }
 
     console.log("Data fetched! Sending to Main App...");
@@ -36,7 +43,7 @@ app.get('/trigger-fetch', async (req, res) => {
         games: gamesData 
     }, {
         headers: {
-            'x-secret-password': process.env.SECRET_PASSWORD // The password you invented
+            'x-secret-password': process.env.SECRET_PASSWORD 
         }
     });
 

@@ -3,7 +3,10 @@ const axios = require('axios');
 require('dotenv').config();
 
 const app = express();
-
+// A simple Front Door
+app.get('/', (req, res) => {
+  res.send("🟢 Server is awake and running perfectly!");
+});
 // The Trigger Endpoint
 app.get('/trigger-fetch', async (req, res) => {
   try {

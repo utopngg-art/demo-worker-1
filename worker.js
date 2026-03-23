@@ -20,7 +20,7 @@ app.get('/trigger-fetch', async (req, res) => {
       params: { 
           league: '39', // Example: Premier League
           season: '2025', 
-          date: new Date().toISOString().split('T')[0] // Gets today's date automatically
+         date: '2026-04-04' // Testing a future weekend!
       } 
     });
 
